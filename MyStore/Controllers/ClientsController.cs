@@ -22,9 +22,8 @@ namespace MyStore.Controllers
         // GET: Clients
         public async Task<IActionResult> Index()
         {
-            return _context.Clients != null
-                ? View(await _context.Clients.ToListAsync())
-                : Problem("Entity set 'ApplicationDbContext.Clients'  is null.");
+            var model = _context.Clients.Include(c => c.Sales);
+            return View(await model.ToListAsync());
         }
 
         // GET: Clients/Details/5
@@ -57,8 +56,11 @@ namespace MyStore.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-            [Bind("Id,FullName,Email,DateOfBirth,Address,City,PostalCode,NIF,CustomerNumber")] Client client)
+            [Bind("Id,FullName,Email,DateOfBirth,Address,City,PostalCode,NIF,CustomerNumber")]
+            Client client)
         {
+            client.CustomerNumber = SetCustomerNumber();
+
             if (ModelState.IsValid)
             {
                 _context.Add(client);
@@ -92,7 +94,8 @@ namespace MyStore.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
-            [Bind("Id,FullName,Email,DateOfBirth,Address,City,PostalCode,NIF,CustomerNumber")] Client client)
+            [Bind("Id,FullName,Email,DateOfBirth,Address,City,PostalCode,NIF,CustomerNumber")]
+            Client client)
         {
             if (id != client.Id)
             {
@@ -165,6 +168,21 @@ namespace MyStore.Controllers
         private bool ClientExists(int id)
         {
             return (_context.Clients?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private int SetCustomerNumber()
+        {
+            var lastRecord = _context.Clients.OrderByDescending(e => e.Id).FirstOrDefault();
+            
+            if (lastRecord != null)
+            {
+                return lastRecord.Id + 1;
+                ;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

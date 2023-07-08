@@ -22,8 +22,8 @@ namespace MyStore.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Categories.Include(c => c.ParentCategory);
-            return View(await applicationDbContext.ToListAsync());
+            var model = _context.Categories.Include(c => c.ParentCategory);
+            return View(await model.ToListAsync());
         }
 
         // GET: Categories/Details/5
@@ -65,6 +65,7 @@ namespace MyStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name", category.ParentCategoryId);
             return View(category);
         }
@@ -82,6 +83,7 @@ namespace MyStore.Controllers
             {
                 return NotFound();
             }
+
             ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name", category.ParentCategoryId);
             return View(category);
         }
@@ -116,8 +118,10 @@ namespace MyStore.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ParentCategoryId"] = new SelectList(_context.Categories, "Id", "Name", category.ParentCategoryId);
             return View(category);
         }
@@ -150,19 +154,26 @@ namespace MyStore.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
             }
+
             var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
                 _context.Categories.Remove(category);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-          return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> ProductsIndex(int id)
+        {
+            var applicationDbContext = _context.Products.Where(p => p.CategoryId == id).Include(p => p.Category);
+            return View(await applicationDbContext.ToListAsync());
         }
     }
 }

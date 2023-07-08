@@ -17,7 +17,7 @@ namespace MyStore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -241,7 +241,6 @@ namespace MyStore.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ParentCategoryId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -347,7 +346,6 @@ namespace MyStore.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Observations")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Paid")
@@ -378,11 +376,51 @@ namespace MyStore.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("SumValue")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("SaleId", "ProductId");
 
-                    b.HasIndex("ProductId");
-
                     b.ToTable("SaleProducts");
+                });
+
+            modelBuilder.Entity("ProductSaleProduct", b =>
+                {
+                    b.Property<int>("ProductsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SaleProductsSaleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SaleProductsProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductsId", "SaleProductsSaleId", "SaleProductsProductId");
+
+                    b.HasIndex("SaleProductsSaleId", "SaleProductsProductId");
+
+                    b.ToTable("ProductSaleProduct");
+                });
+
+            modelBuilder.Entity("SaleSaleProduct", b =>
+                {
+                    b.Property<int>("SalesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SaleProductsSaleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SaleProductsProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SalesId", "SaleProductsSaleId", "SaleProductsProductId");
+
+                    b.HasIndex("SaleProductsSaleId", "SaleProductsProductId");
+
+                    b.ToTable("SaleSaleProduct");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -441,8 +479,7 @@ namespace MyStore.Migrations
                     b.HasOne("MyStore.Models.Category", "ParentCategory")
                         .WithMany("SubCategories")
                         .HasForeignKey("ParentCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ParentCategory");
                 });
@@ -461,7 +498,7 @@ namespace MyStore.Migrations
             modelBuilder.Entity("MyStore.Models.Sale", b =>
                 {
                     b.HasOne("MyStore.Models.Client", "Client")
-                        .WithMany()
+                        .WithMany("Sales")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -469,23 +506,34 @@ namespace MyStore.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("MyStore.Models.SaleProduct", b =>
+            modelBuilder.Entity("ProductSaleProduct", b =>
                 {
-                    b.HasOne("MyStore.Models.Product", "Product")
-                        .WithMany("SaleProducts")
-                        .HasForeignKey("ProductId")
+                    b.HasOne("MyStore.Models.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MyStore.Models.Sale", "Sale")
-                        .WithMany("SaleProducts")
-                        .HasForeignKey("SaleId")
+                    b.HasOne("MyStore.Models.SaleProduct", null)
+                        .WithMany()
+                        .HasForeignKey("SaleProductsSaleId", "SaleProductsProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SaleSaleProduct", b =>
+                {
+                    b.HasOne("MyStore.Models.Sale", null)
+                        .WithMany()
+                        .HasForeignKey("SalesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
-
-                    b.Navigation("Sale");
+                    b.HasOne("MyStore.Models.SaleProduct", null)
+                        .WithMany()
+                        .HasForeignKey("SaleProductsSaleId", "SaleProductsProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MyStore.Models.Category", b =>
@@ -495,14 +543,9 @@ namespace MyStore.Migrations
                     b.Navigation("SubCategories");
                 });
 
-            modelBuilder.Entity("MyStore.Models.Product", b =>
+            modelBuilder.Entity("MyStore.Models.Client", b =>
                 {
-                    b.Navigation("SaleProducts");
-                });
-
-            modelBuilder.Entity("MyStore.Models.Sale", b =>
-                {
-                    b.Navigation("SaleProducts");
+                    b.Navigation("Sales");
                 });
 #pragma warning restore 612, 618
         }

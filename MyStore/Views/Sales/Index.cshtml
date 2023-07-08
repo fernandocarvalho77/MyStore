@@ -9,38 +9,39 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table id="table" class="table table-striped">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.SaleIdentifier)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Time)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Client)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Observations)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FinalValue)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Paid)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.SaleIdentifier)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Client)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Observations)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinalValue)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Paid)
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.SaleIdentifier)
@@ -72,6 +73,28 @@
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+@section Scripts {
+    <script type="text/javascript" on-content-loaded="true">
+    $(document).ready(function () {
+        $('#table').DataTable({
+            "scrollX": false,
+            "responsive": true,
+            "language": {
+                url: "/lib/DataTables/i18n/pt-PT.json"
+            },
+            "columnDefs": [
+                { "targets": 0, "visible": true, "searchable": true },
+                { "targets": 1, "visible": true, "searchable": false },
+                { "targets": 2, "visible": true, "searchable": false },
+                { "targets": 3, "visible": true, "searchable": true },
+                { "targets": 5, "visible": true, "searchable": true },
+                { "targets": 5, "orderable": false }
+            ]
+        });
+    });
+    </script>
+}

@@ -28,7 +28,7 @@ public class Product
 
     [Required(ErrorMessage = "The Weight field is required.")]
     [Range(0, double.MaxValue, ErrorMessage = "The Weight must be greater than or equal to zero.")]
-    [Display(Name = "Weight")]
+    [Display(Name = "Weight (g)")]
     public double Weight { get; set; }
 
     [Required(ErrorMessage = "The Category field is required.")]

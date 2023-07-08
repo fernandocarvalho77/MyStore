@@ -9,29 +9,30 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table id="table" class="table table-striped">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FinalPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StockQuantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Weight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinalPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StockQuantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Weight)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
@@ -54,6 +55,29 @@
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+@section Scripts {
+    <script type="text/javascript" on-content-loaded="true">
+    $(document).ready(function () {
+
+        $('#table').DataTable({
+            "scrollX": false,
+            "responsive": true,
+            "language": {
+                url: "/lib/DataTables/i18n/pt-PT.json"
+            },
+            "columnDefs": [
+                { "targets": 0, "visible": true, "searchable": true },
+                { "targets": 1, "visible": true, "searchable": true },
+                { "targets": 2, "visible": true, "searchable": true },
+                { "targets": 3, "visible": true, "searchable": true },
+                { "targets": 4, "visible": true, "searchable": true },
+                { "targets": 5, "orderable": false }
+            ]
+        });
+    });
+    </script>
+}

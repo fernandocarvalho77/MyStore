@@ -34,8 +34,8 @@ public class ApplicationDbContext : IdentityDbContext
         modelBuilder.Entity<Sale>()
             .Property(s => s.FinalValue)
             .HasPrecision(18, 2);
-        
+
         modelBuilder.Entity<SaleProduct>()
-            .HasKey(sp => new { sp.SaleId, sp.ProductId });
+            .HasKey(sp => new {sp.SaleId, sp.ProductId});
     }
 }

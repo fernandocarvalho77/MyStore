@@ -5,6 +5,11 @@ namespace MyStore.Models;
 
 public class Category
 {
+    public Category()
+    {
+        SubCategories = new List<Category>();
+        Products = new List<Product>();
+    }
     public int Id { get; set; }
 
     [Required(ErrorMessage = "The Name field is required.")]
@@ -21,7 +26,9 @@ public class Category
     [Display(Name = "Parent Category")]
     public Category? ParentCategory { get; set; }
 
+    [ValidateNever]
     public List<Category> SubCategories { get; set; }
-        
+
+    [ValidateNever] 
     public List<Product> Products { get; set; }
 }

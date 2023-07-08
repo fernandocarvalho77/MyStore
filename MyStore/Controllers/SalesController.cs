@@ -22,8 +22,8 @@ namespace MyStore.Controllers
         // GET: Sales
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Sales.Include(s => s.Client);
-            return View(await applicationDbContext.ToListAsync());
+            var model = _context.Sales.Include(s => s.Client);
+            return View(await model.ToListAsync());
         }
 
         // GET: Sales/Details/5
@@ -48,8 +48,25 @@ namespace MyStore.Controllers
         // GET: Sales/Create
         public IActionResult Create()
         {
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Address");
-            return View();
+            ViewData["ClientId"] =
+                new SelectList((from c in _context.Clients.ToList()
+                    select new
+                    {
+                        Id = c.Id,
+                        FullName = c.CustomerNumber + " / " + c.FullName
+                    }), "Id", "FullName");
+            
+            ViewBag.Products = _context.Products.ToList();
+            
+            var model = new Sale
+            {
+                Date = DateTime.Now,
+                Time = DateTime.Now,
+                Status = SaleStatus.Pending,
+                Paid = false
+            };
+            
+            return View(model);
         }
 
         // POST: Sales/Create
@@ -59,11 +76,29 @@ namespace MyStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             [Bind("Id,SaleIdentifier,Date,Time,ClientId,Observations,FinalValue,Status,Paid")]
-            Sale sale)
+            Sale sale, IFormCollection formCollection)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(sale);
+                _context.Sales.Add(sale);
+                await _context.SaveChangesAsync();
+                
+                // Save the products associated with the sale
+                var productCount = (formCollection.Count - 7) / 5;
+                
+                for (int i = 1; i <= productCount; i++) // Assuming there are two products in the form
+                {
+                    var saleProduct = new SaleProduct
+                    {
+                        SaleId = sale.Id,
+                        ProductId = int.Parse(formCollection[$"Products_{i}_Id"]),
+                        Quantity = int.Parse(formCollection[$"Products_{i}_Quantity"]),
+                        SumValue = decimal.Parse(formCollection[$"Products_{i}_Sum"])
+                    };
+
+                    _context.SaleProducts.Add(saleProduct);
+                }
+                
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

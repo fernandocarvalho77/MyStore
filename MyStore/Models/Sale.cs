@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Azure.Core;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
@@ -36,9 +37,9 @@ public class Sale
     [ValidateNever]
     [Required(ErrorMessage = "The Client field is required.")]
     [Display(Name = "Client")]
-    public Client Client { get; set; }
+    public Client? Client { get; set; }
 
-    [Display(Name = "Observations")] public string Observations { get; set; }
+    [Display(Name = "Observations")] public string? Observations { get; set; }
 
     [Required(ErrorMessage = "The Final Value field is required.")]
     [Range(0, double.MaxValue, ErrorMessage = "The Final Value must be greater than or equal to zero.")]

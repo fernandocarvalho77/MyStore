@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using MyStore.Data;
 
 namespace MyStore.Models;
 
@@ -6,7 +8,6 @@ public class Client
 {
     public Client()
     {
-        CustomerNumber = new Random().Next(1, 9999999);
         Sales = new List<Sale>();
     }
 
@@ -46,6 +47,6 @@ public class Client
     [Required(ErrorMessage = "The Customer Number field is required.")]
     [Display(Name = "Customer Number")]
     public int CustomerNumber { get; set; }
-    
+
     public List<Sale> Sales { get; set; }
 }
